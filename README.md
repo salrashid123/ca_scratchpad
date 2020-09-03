@@ -17,17 +17,9 @@ $ tree
 ```
 
 
-### Setup
+### Create Root CA
 
 Create a root CA and subordinate
-
-```bash
-mkdir ca/
-openssl x509 -in ca/root-ca.crt -text -noout
-```
-
-
-### Create Root CA
 
 ```bash
 mkdir -p ca/root-ca/private ca/root-ca/db crl certs
@@ -38,13 +30,13 @@ cp /dev/null ca/root-ca/db/root-ca.db.attr
 echo 01 > ca/root-ca/db/root-ca.crt.srl
 echo 01 > ca/root-ca/db/root-ca.crl.srl
 
+
 openssl req -new     -config root-ca.conf     -out ca/root-ca.csr     -keyout ca/root-ca/private/root-ca.key
-  <pick any a password>
-
+ (pick any password)
 openssl ca -selfsign     -config root-ca.conf     -in ca/root-ca.csr     -out ca/root-ca.crt     -extensions root_ca_ext
-
 openssl x509 -in ca/root-ca.crt -text -noout
 ```
+
 
 ### Gen CRL
 
@@ -107,9 +99,7 @@ edit the CN value below (eg to the same SAN Value)
 export NAME=server
 export SAN=DNS:server.domain.com
 openssl req -new     -config server.conf     -out certs/$NAME.csr     -keyout certs/$NAME.key -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
-```
 
-```bash
 openssl ca \
     -config tls-ca.conf \
     -in certs/$NAME.csr \
@@ -128,14 +118,14 @@ export NAME=tokenclient
 openssl req -new \
     -config client.conf \
     -out certs/$NAME.csr \
-    -keyout certs/$NAME.key
+    -keyout certs/$NAME.key \
+    -subj "/C=US/O=Google/OU=Enterprise/CN=user@domain.com"
 
 openssl ca \
     -config tls-ca.conf \
     -in certs/$NAME.csr \
     -out certs/$NAME.crt \
-    -policy extern_pol \
-    -extensions client_ext -subj "/C=US/O=Google/OU=Enterprise/CN=tokenclient.domain.com"
+    -policy extern_pol 
 ```
 
 ### Revoke a certificate
