@@ -137,3 +137,59 @@ openssl ca -config tls-ca.conf   -revoke certs/$NAME.crt
 ```
 and then regenerate the CRL
 
+you'll end up with
+
+```bash
+$ tree
+.
+├── ca
+│   ├── root-ca
+│   │   ├── 01.pem
+│   │   ├── 02.pem
+│   │   ├── db
+│   │   │   ├── root-ca.crl.srl
+│   │   │   ├── root-ca.crl.srl.old
+│   │   │   ├── root-ca.crt.srl
+│   │   │   ├── root-ca.crt.srl.old
+│   │   │   ├── root-ca.db
+│   │   │   ├── root-ca.db.attr
+│   │   │   ├── root-ca.db.attr.old
+│   │   │   └── root-ca.db.old
+│   │   └── private
+│   │       └── root-ca.key                // root CA key
+│   ├── root-ca.crt                        // root CA cert
+│   ├── root-ca.csr
+│   ├── tls-ca
+│   │   ├── 01.pem
+│   │   ├── 02.pem
+│   │   ├── db
+│   │   │   ├── tls-ca.crl.srl
+│   │   │   ├── tls-ca.crl.srl.old
+│   │   │   ├── tls-ca.crt.srl
+│   │   │   ├── tls-ca.crt.srl.old
+│   │   │   ├── tls-ca.db
+│   │   │   ├── tls-ca.db.attr
+│   │   │   ├── tls-ca.db.attr.old
+│   │   │   └── tls-ca.db.old
+│   │   └── private
+│   │       └── tls-ca.key                // subordinate CA key
+│   ├── tls-ca-chain.pem
+│   ├── tls-ca.crt                        // subordinate CA cert
+│   └── tls-ca.csr
+├── certs
+│   ├── server.crt                        // issued server cert by tls-ca
+│   ├── server.csr 
+│   ├── server.key                        // issued server key by tls-ca
+│   ├── tokenclient.crt                   // client cert
+│   ├── tokenclient.csr
+│   └── tokenclient.key                   // client key
+├── client.conf
+├── crl                                   // CRL file
+│   ├── root-ca.crl
+│   └── tls-ca.crl
+├── LICENSE
+├── README.md
+├── root-ca.conf
+├── server.conf
+└── tls-ca.conf
+```
