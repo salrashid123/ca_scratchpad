@@ -31,9 +31,15 @@ echo 01 > ca/root-ca/db/root-ca.crt.srl
 echo 01 > ca/root-ca/db/root-ca.crl.srl
 
 
-openssl req -new     -config root-ca.conf     -out ca/root-ca.csr     -keyout ca/root-ca/private/root-ca.key
+openssl req -new     -config root-ca.conf  \
+   -out ca/root-ca.csr  \
+   -keyout ca/root-ca/private/root-ca.key
  (pick any password)
-openssl ca -selfsign     -config root-ca.conf     -in ca/root-ca.csr     -out ca/root-ca.crt     -extensions root_ca_ext
+
+openssl ca -selfsign     -config root-ca.conf  \
+   -in ca/root-ca.csr     -out ca/root-ca.crt  \
+   -extensions root_ca_ext
+
 openssl x509 -in ca/root-ca.crt -text -noout
 ```
 
@@ -44,7 +50,9 @@ Optionally create a CRL
 
 ```bash
 mkdir crl/
+
 openssl ca -gencrl     -config root-ca.conf     -out crl/root-ca.crl
+
 openssl crl -in crl/root-ca.crl -noout -text
 ```
 
@@ -98,7 +106,10 @@ edit the CN value below (eg to the same SAN Value)
 ```bash
 export NAME=server
 export SAN=DNS:server.domain.com
-openssl req -new     -config server.conf     -out certs/$NAME.csr     -keyout certs/$NAME.key -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
+openssl req -new     -config server.conf \
+  -out certs/$NAME.csr   \
+  -keyout certs/$NAME.key \
+  -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
 
 openssl ca \
     -config tls-ca.conf \
@@ -125,7 +136,8 @@ openssl ca \
     -config tls-ca.conf \
     -in certs/$NAME.csr \
     -out certs/$NAME.crt \
-    -policy extern_pol 
+    -policy extern_pol \
+    -extensions client_ext
 ```
 
 ### Revoke a certificate
