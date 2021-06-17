@@ -31,7 +31,7 @@ echo 01 > ca/root-ca/db/root-ca.crt.srl
 echo 01 > ca/root-ca/db/root-ca.crl.srl
 
 
-openssl req -new     -config root-ca.conf  \
+openssl req -new     -config root-ca.conf  -newkey ec:<(openssl ecparam -name secp384r1) \
    -out ca/root-ca.csr  \
    -keyout ca/root-ca/private/root-ca.key
  (pick any password)
@@ -43,6 +43,13 @@ openssl ca -selfsign     -config root-ca.conf  \
 openssl x509 -in ca/root-ca.crt -text -noout
 ```
 
+if you want to use ecdsa, specify it during creation of the keys:
+
+```bash
+openssl req -new     -config root-ca.conf \
+  -newkey ec:<(openssl ecparam -name secp384r1)  \
+  -out ca/root-ca.csr     -keyout ca/root-ca/private/root-ca.key
+```
 
 ### Gen CRL
 
