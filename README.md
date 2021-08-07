@@ -30,11 +30,23 @@ cp /dev/null ca/root-ca/db/root-ca.db.attr
 echo 01 > ca/root-ca/db/root-ca.crt.srl
 echo 01 > ca/root-ca/db/root-ca.crl.srl
 
+# Pick signature algo (either do A,B or C)
 
-openssl req -new     -config root-ca.conf  -newkey ec:<(openssl ecparam -name secp384r1) \
-   -out ca/root-ca.csr  \
-   -keyout ca/root-ca/private/root-ca.key
- (pick any password)
+# A) Signature Algorithm: sha256WithRSAEncryption
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# B) Signature Algorithm: rsassaPss
+    openssl genpkey -algorithm rsa-pss -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# C) Signature Algorithm: ecdsa-with-SHA256
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
+      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+      -out ca/root-ca/private/root-ca.key
+   
+openssl req -new  -config root-ca.conf  -key ca/root-ca/private/root-ca.key \
+   -out ca/root-ca.csr  
 
 openssl ca -selfsign     -config root-ca.conf  \
    -in ca/root-ca.csr     -out ca/root-ca.crt  \
@@ -43,13 +55,6 @@ openssl ca -selfsign     -config root-ca.conf  \
 openssl x509 -in ca/root-ca.crt -text -noout
 ```
 
-if you want to use ecdsa, specify it during creation of the keys:
-
-```bash
-openssl req -new     -config root-ca.conf \
-  -newkey ec:<(openssl ecparam -name secp384r1)  \
-  -out ca/root-ca.csr     -keyout ca/root-ca/private/root-ca.key
-```
 
 ### Gen CRL
 
@@ -67,7 +72,7 @@ openssl crl -in crl/root-ca.crl -noout -text
 
 This is the CA that will issue the client and server certs
 
-```
+```bash
 mkdir -p ca/tls-ca/private ca/tls-ca/db crl certs
 chmod 700 ca/tls-ca/private
 
@@ -76,12 +81,24 @@ cp /dev/null ca/tls-ca/db/tls-ca.db.attr
 echo 01 > ca/tls-ca/db/tls-ca.crt.srl
 echo 01 > ca/tls-ca/db/tls-ca.crl.srl
 
+# Pick signature algo (either do A,B or C)
 
-openssl req -new \
-    -config tls-ca.conf \
-    -out ca/tls-ca.csr \
-    -keyout ca/tls-ca/private/tls-ca.key
+# A) Signature Algorithm: sha256WithRSAEncryption
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/tls-ca/private/tls-ca.key
 
+# B) Signature Algorithm: rsassaPss
+    openssl genpkey -algorithm rsa-pss -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/tls-ca/private/tls-ca.key
+
+# C) Signature Algorithm: ecdsa-with-SHA256
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
+      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+      -out ca/tls-ca/private/tls-ca.key
+   
+
+openssl req -new  -config tls-ca.conf -key ca/tls-ca/private/tls-ca.key \
+   -out ca/tls-ca.csr
 
 openssl ca \
     -config root-ca.conf \
@@ -151,7 +168,7 @@ openssl ca \
 
 If you want to revoke a certificate `certs/$NAME.crt`, run
 
-```
+```bash
 openssl ca -config tls-ca.conf   -revoke certs/$NAME.crt
 ```
 and then regenerate the CRL
