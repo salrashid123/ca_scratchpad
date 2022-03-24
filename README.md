@@ -16,6 +16,10 @@ $ tree
 └── tls-ca.conf   // config for the subordinate ca 
 ```
 
+This will generate a root CA, crls, subordinate CA and then using the subordinate, any number of client and server certs.
+
+If you just want leaf certs issued directly from the root, see the section at the end 
+
 
 ### Create Root CA
 
@@ -228,4 +232,80 @@ $ tree
 ├── root-ca.conf
 ├── server.conf
 └── tls-ca.conf
+```
+
+
+### Single Level CA
+
+The following will issue certificates directly from the root
+
+
+```bash
+mkdir -p ca/root-ca/private ca/root-ca/db crl certs
+chmod 700 ca/root-ca/private
+cp /dev/null ca/root-ca/db/root-ca.db
+cp /dev/null ca/root-ca/db/root-ca.db.attr
+
+echo 01 > ca/root-ca/db/root-ca.crt.srl
+echo 01 > ca/root-ca/db/root-ca.crl.srl
+
+# Pick signature algo (either do A,B or C)
+
+# A) Signature Algorithm: sha256WithRSAEncryption
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# B) Signature Algorithm: rsassaPss
+    openssl genpkey -algorithm rsa-pss -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# C) Signature Algorithm: ecdsa-with-SHA256
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
+      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+      -out ca/root-ca/private/root-ca.key
+   
+openssl req -new  -config single-root-ca.conf  -key ca/root-ca/private/root-ca.key \
+   -out ca/root-ca.csr  
+
+openssl ca -selfsign     -config single-root-ca.conf  \
+   -in ca/root-ca.csr     -out ca/root-ca.crt  \
+   -extensions root_ca_ext
+
+```
+
+- Issue server
+
+```bash
+export NAME=server
+export SAN=DNS:server.domain.com
+openssl req -new     -config server.conf \
+  -out certs/$NAME.csr   \
+  -keyout certs/$NAME.key \
+  -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
+
+openssl ca \
+    -config single-root-ca.conf \
+    -in certs/$NAME.csr \
+    -out certs/$NAME.crt \
+    -extensions server_ext
+```
+
+- Issue client
+
+
+```bash
+export NAME=user10
+
+openssl req -new \
+    -config client.conf \
+    -out certs/$NAME.csr \
+    -keyout certs/$NAME.key \
+    -subj "/L=US/O=Google/OU=Enterprise/CN=user@domain.com"
+
+openssl ca \
+    -config single-root-ca.conf \
+    -in certs/$NAME.csr \
+    -out certs/$NAME.crt \
+    -policy extern_pol \
+    -extensions client_ext
 ```
