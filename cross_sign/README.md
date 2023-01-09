@@ -180,7 +180,7 @@ owIDAQAB
 ```
 
 
-![images/tls-ca-1.png](images/tls-ca-1.png.png)
+![images/tls-ca-1.png](images/tls-ca-1.png)
 
 ![images/tls-ca-cross.png](images/tls-ca-cross.png)
 
