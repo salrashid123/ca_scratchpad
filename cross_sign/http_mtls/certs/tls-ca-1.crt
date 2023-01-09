@@ -1,0 +1,88 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 2 (0x2)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google, OU=Enterprise, CN=Enterprise Root CA-1
+        Validity
+            Not Before: Jan  6 23:52:44 2023 GMT
+            Not After : Jan  5 23:52:44 2033 GMT
+        Subject: C=US, O=Google, OU=Enterprise, CN=Enterprise Subordinate CA-1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:e8:14:3f:3c:87:90:f3:f6:44:b7:80:c1:68:69:
+                    67:dc:63:e1:d9:4e:ac:df:ff:5d:1a:2c:67:63:38:
+                    76:1d:89:b4:4c:cb:e7:30:a3:43:04:4e:bf:14:0d:
+                    a3:63:59:d2:72:08:a4:2f:fb:d6:bc:55:38:9e:ea:
+                    99:63:15:79:63:77:9a:5b:03:bd:15:84:9e:21:dd:
+                    a6:fb:fd:5a:15:05:c8:82:76:41:1d:22:cc:f8:54:
+                    a4:24:8e:23:e3:40:df:27:b5:10:c6:fd:36:0b:5f:
+                    96:ee:30:52:2d:2e:e2:eb:ad:28:cf:f4:d8:40:9a:
+                    50:fb:38:67:f6:ab:a8:0c:06:fe:af:60:6f:e7:11:
+                    d7:2f:23:95:94:9d:b4:35:3b:80:09:53:8b:ef:6e:
+                    5b:42:6d:6e:98:40:11:19:96:fb:e9:a5:aa:92:6c:
+                    7d:5c:a8:55:08:69:fa:71:4a:8c:10:cb:fb:1d:2b:
+                    5c:62:87:46:e1:b3:d0:dc:d1:bf:da:0c:a4:79:81:
+                    20:b5:85:b3:ce:89:55:b8:70:ad:a6:43:ba:df:98:
+                    61:f6:ab:2d:9e:c2:6e:67:28:82:65:18:66:33:b3:
+                    ee:9e:bd:6d:8a:42:49:22:ab:28:4e:6e:03:b5:22:
+                    93:19:99:b6:34:bf:34:d3:ba:07:29:a3:fb:98:d5:
+                    52:a3
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Certificate Sign, CRL Sign
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier: 
+                5D:C9:2F:53:5C:08:51:64:B1:27:34:1E:58:4E:B6:E4:0E:EB:9F:66
+            X509v3 Authority Key Identifier: 
+                2B:FB:AD:F5:CE:AC:81:21:1D:81:2E:E7:A2:DE:16:86:E8:89:A0:90
+            Authority Information Access: 
+                CA Issuers - URI:http://pki.esodemoapp2.com/ca/root-ca-1.cer
+            X509v3 CRL Distribution Points: 
+                Full Name:
+                  URI:http://pki.esodemoapp2.com/ca/root-ca-1.crl
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        2e:6b:f1:1b:2a:7f:77:87:45:77:78:5d:09:33:d6:2c:1a:e5:
+        4d:82:6a:bd:d2:a2:09:c2:72:d5:8d:ab:ca:87:3a:36:6a:2b:
+        be:87:51:7a:0b:ac:9c:0e:e1:ac:95:ee:da:9d:67:e1:81:1a:
+        a6:2a:7f:65:a2:53:66:e7:c4:ac:d4:b6:26:4d:41:60:3c:5d:
+        4c:97:df:c1:e4:c8:88:9c:2d:74:bf:b3:b6:55:ec:41:43:db:
+        50:bd:7b:0d:48:97:52:11:de:c3:e1:0c:72:6d:d3:0b:3e:f3:
+        04:e1:00:a3:70:dd:cc:fe:ec:5a:f0:fc:bc:59:da:26:9d:c3:
+        35:13:50:7c:b7:82:55:3d:98:09:a1:56:3a:2a:0e:19:28:4e:
+        93:de:dd:ae:8b:eb:52:cf:e2:be:62:c8:29:a7:c8:85:11:6d:
+        af:5d:7a:cb:e3:5c:d6:bb:07:d3:eb:24:24:92:a6:87:75:2d:
+        db:63:19:cb:ec:40:74:59:61:a1:a8:da:75:60:a1:43:82:3b:
+        00:4c:57:9e:fb:0a:e8:ba:08:01:55:76:93:7b:d2:a0:aa:0e:
+        10:5d:5e:15:bf:06:24:e0:b6:36:f5:8a:ed:bb:7b:df:8c:fb:
+        bf:b7:1f:20:02:16:75:54:cd:9f:42:f6:d2:7e:dc:9d:81:9c:
+        af:b9:db:c1
+-----BEGIN CERTIFICATE-----
+MIIEFTCCAv2gAwIBAgIBAjANBgkqhkiG9w0BAQsFADBSMQswCQYDVQQGEwJVUzEP
+MA0GA1UECgwGR29vZ2xlMRMwEQYDVQQLDApFbnRlcnByaXNlMR0wGwYDVQQDDBRF
+bnRlcnByaXNlIFJvb3QgQ0EtMTAeFw0yMzAxMDYyMzUyNDRaFw0zMzAxMDUyMzUy
+NDRaMFkxCzAJBgNVBAYTAlVTMQ8wDQYDVQQKDAZHb29nbGUxEzARBgNVBAsMCkVu
+dGVycHJpc2UxJDAiBgNVBAMMG0VudGVycHJpc2UgU3Vib3JkaW5hdGUgQ0EtMTCC
+ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOgUPzyHkPP2RLeAwWhpZ9xj
+4dlOrN//XRosZ2M4dh2JtEzL5zCjQwROvxQNo2NZ0nIIpC/71rxVOJ7qmWMVeWN3
+mlsDvRWEniHdpvv9WhUFyIJ2QR0izPhUpCSOI+NA3ye1EMb9Ngtflu4wUi0u4uut
+KM/02ECaUPs4Z/arqAwG/q9gb+cR1y8jlZSdtDU7gAlTi+9uW0JtbphAERmW++ml
+qpJsfVyoVQhp+nFKjBDL+x0rXGKHRuGz0NzRv9oMpHmBILWFs86JVbhwraZDut+Y
+YfarLZ7CbmcogmUYZjOz7p69bYpCSSKrKE5uA7UikxmZtjS/NNO6Bymj+5jVUqMC
+AwEAAaOB7jCB6zAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBADAd
+BgNVHQ4EFgQUXckvU1wIUWSxJzQeWE625A7rn2YwHwYDVR0jBBgwFoAUK/ut9c6s
+gSEdgS7not4WhuiJoJAwRwYIKwYBBQUHAQEEOzA5MDcGCCsGAQUFBzAChitodHRw
+Oi8vcGtpLmVzb2RlbW9hcHAyLmNvbS9jYS9yb290LWNhLTEuY2VyMDwGA1UdHwQ1
+MDMwMaAvoC2GK2h0dHA6Ly9wa2kuZXNvZGVtb2FwcDIuY29tL2NhL3Jvb3QtY2Et
+MS5jcmwwDQYJKoZIhvcNAQELBQADggEBAC5r8Rsqf3eHRXd4XQkz1iwa5U2Car3S
+ognCctWNq8qHOjZqK76HUXoLrJwO4ayV7tqdZ+GBGqYqf2WiU2bnxKzUtiZNQWA8
+XUyX38HkyIicLXS/s7ZV7EFD21C9ew1Il1IR3sPhDHJt0ws+8wThAKNw3cz+7Frw
+/LxZ2iadwzUTUHy3glU9mAmhVjoqDhkoTpPe3a6L61LP4r5iyCmnyIURba9desvj
+XNa7B9PrJCSSpod1LdtjGcvsQHRZYaGo2nVgoUOCOwBMV577Cui6CAFVdpN70qCq
+DhBdXhW/BiTgtjb1iu27e9+M+7+3HyACFnVUzZ9C9tJ+3J2BnK+528E=
+-----END CERTIFICATE-----

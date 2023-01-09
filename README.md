@@ -1,6 +1,8 @@
 ## Create Root CA Key and cert
 
-This repo is just a simple template to create a self-issued CA and Subordinate CA to issue TLS certificates
+This repo is just a simple template to create a self-issued CA and Subordinate CA to issue TLS certificates.
+
+The `cross_sign/` folder contains instruction to create two CAs and Subordinate CAs where one is cross signed
 
 ```
 $ tree
