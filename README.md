@@ -155,6 +155,7 @@ Generate client certificate
 
 ```bash
 export NAME=tokenclient
+export SAN=DNS:tokenclient.domain.com
 
 openssl req -new \
     -config client.conf \
