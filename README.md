@@ -298,12 +298,13 @@ openssl ca \
 
 ```bash
 export NAME=user10
+export SAN=DNS:user10.domain.com
 
 openssl req -new \
     -config client.conf \
     -out certs/$NAME.csr \
     -keyout certs/$NAME.key \
-    -subj "/L=US/O=Google/OU=Enterprise/CN=user@domain.com"
+    -subj "/L=US/O=Google/OU=Enterprise/CN=user10.domain.com"
 
 openssl ca \
     -config single-root-ca.conf \
