@@ -22,6 +22,113 @@ This will generate a root CA, crls, subordinate CA and then using the subordinat
 
 If you just want leaf certs issued directly from the root, see the section at the end 
 
+For starters, we'll just crate a single root CA:
+
+### Single Level CA
+
+The following will issue certificates directly from the root
+
+
+```bash
+mkdir -p ca/root-ca/private ca/root-ca/db crl certs
+chmod 700 ca/root-ca/private
+cp /dev/null ca/root-ca/db/root-ca.db
+cp /dev/null ca/root-ca/db/root-ca.db.attr
+
+echo 01 > ca/root-ca/db/root-ca.crt.srl
+echo 01 > ca/root-ca/db/root-ca.crl.srl
+
+# Pick signature algo (either do A,B or C)
+
+# A) Signature Algorithm: sha256WithRSAEncryption
+    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# B) Signature Algorithm: rsassaPss
+    openssl genpkey -algorithm rsa-pss -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
+
+# C) Signature Algorithm: ecdsa-with-SHA256
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
+      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+      -out ca/root-ca/private/root-ca.key
+   
+openssl req -new  -config single-root-ca.conf  -key ca/root-ca/private/root-ca.key \
+   -out ca/root-ca.csr  
+
+openssl ca -selfsign     -config single-root-ca.conf  \
+   -in ca/root-ca.csr     -out ca/root-ca.crt  \
+   -extensions root_ca_ext
+
+```
+
+- Issue server
+
+```bash
+export NAME=server
+
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
+openssl req -new     -config server.conf \
+  -out certs/$NAME.csr  \
+  -key certs/$NAME.key \
+  -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com" 
+
+## to specify a SAN, edit single-root-ca.conf and modify [ alt_names ]
+
+openssl ca \
+    -config single-root-ca.conf \
+    -in certs/$NAME.csr \
+    -out certs/$NAME.crt  \
+    -extensions server_ext
+```
+
+- Issue client
+
+
+```bash
+export NAME=user10
+
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
+openssl req -new \
+    -config client.conf \
+    -out certs/$NAME.csr \
+    -key certs/$NAME.key \
+    -subj "/L=US/O=Google/OU=Enterprise/CN=user10.domain.com"
+
+## to specify a SAN, edit single-root0ca.conf and modify [ alt_names ]
+
+openssl ca \
+    -config single-root-ca.conf \
+    -in certs/$NAME.csr \
+    -out certs/$NAME.crt \
+    -policy extern_pol \
+    -extensions client_ext
+```
+
+
+note, for ECC keys, its something like this:
+
+```bash
+openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
+      -pkeyopt ec_param_enc:named_curve \
+      -out certs/$NAME.key
+
+openssl req -new     -config server.conf \
+  -out certs/$NAME.csr   \
+  -key certs/$NAME.key \
+  -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
+
+openssl ca \
+    -config single-root-ca.conf \
+    -in certs/$NAME.csr \
+    -out certs/$NAME.crt \
+    -extensions server_ext
+```
+
 
 ### Create Root CA
 
@@ -135,11 +242,16 @@ edit the CN value below (eg to the same SAN Value)
 
 ```bash
 export NAME=server
-export SAN=DNS:server.domain.com
+
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
 openssl req -new     -config server.conf \
   -out certs/$NAME.csr   \
-  -keyout certs/$NAME.key \
+  -key certs/$NAME.key \
   -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
+
+## to specify a SAN, edit tls-caa.conf and modify [ alt_names ]
 
 openssl ca \
     -config tls-ca.conf \
@@ -154,14 +266,19 @@ openssl ca \
 Generate client certificate
 
 ```bash
-export NAME=tokenclient
-export SAN=DNS:tokenclient.domain.com
+export NAME=user
+
+openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
 
 openssl req -new \
     -config client.conf \
     -out certs/$NAME.csr \
-    -keyout certs/$NAME.key \
+    -key certs/$NAME.key \
     -subj "/C=US/O=Google/OU=Enterprise/CN=user@domain.com"
+
+## to specify a SAN, edit tls-caa.conf and modify [ alt_names ]
 
 openssl ca \
     -config tls-ca.conf \
@@ -237,79 +354,34 @@ $ tree
 └── tls-ca.conf
 ```
 
+### TPM based private key
 
-### Single Level CA
+If you have openssl and want to issue a cert on the TPM, 
 
-The following will issue certificates directly from the root
+also see [sa_pki.sh](https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_pki/rsa_pki.sh)
 
-
-```bash
-mkdir -p ca/root-ca/private ca/root-ca/db crl certs
-chmod 700 ca/root-ca/private
-cp /dev/null ca/root-ca/db/root-ca.db
-cp /dev/null ca/root-ca/db/root-ca.db.attr
-
-echo 01 > ca/root-ca/db/root-ca.crt.srl
-echo 01 > ca/root-ca/db/root-ca.crl.srl
-
-# Pick signature algo (either do A,B or C)
-
-# A) Signature Algorithm: sha256WithRSAEncryption
-    openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
-      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
-
-# B) Signature Algorithm: rsassaPss
-    openssl genpkey -algorithm rsa-pss -pkeyopt rsa_keygen_bits:2048 \
-      -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
-
-# C) Signature Algorithm: ecdsa-with-SHA256
-    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
-      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
-      -out ca/root-ca/private/root-ca.key
-   
-openssl req -new  -config single-root-ca.conf  -key ca/root-ca/private/root-ca.key \
-   -out ca/root-ca.csr  
-
-openssl ca -selfsign     -config single-root-ca.conf  \
-   -in ca/root-ca.csr     -out ca/root-ca.crt  \
-   -extensions root_ca_ext
-
-```
-
-- Issue server
+using openssl3 [tpm2-openssl](https://github.com/tpm2-software/tpm2-openssl) installed:
 
 ```bash
-export NAME=server
-export SAN=DNS:server.domain.com
-openssl req -new     -config server.conf \
-  -out certs/$NAME.csr   \
-  -keyout certs/$NAME.key \
-  -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
+openssl version
+   OpenSSL 3.0.9 30 May 2023 (Library: OpenSSL 3.0.9 30 May 2023)
+
+export NAME=tpms
+
+openssl genpkey -provider tpm2 -algorithm RSA -pkeyopt rsa_keygen_bits:2048 \
+      -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
+openssl req -new  -provider tpm2 -provider default \
+      -config server.conf   -out certs/$NAME.csr \
+          -key certs/$NAME.key   -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com"
 
 openssl ca \
-    -config single-root-ca.conf \
+    -config single-root-ca.conf  \
     -in certs/$NAME.csr \
     -out certs/$NAME.crt \
     -extensions server_ext
-```
 
-- Issue client
+openssl  x509 -pubkey -noout -in certs/$NAME.crt
 
-
-```bash
-export NAME=user10
-export SAN=DNS:user10.domain.com
-
-openssl req -new \
-    -config client.conf \
-    -out certs/$NAME.csr \
-    -keyout certs/$NAME.key \
-    -subj "/L=US/O=Google/OU=Enterprise/CN=user10.domain.com"
-
-openssl ca \
-    -config single-root-ca.conf \
-    -in certs/$NAME.csr \
-    -out certs/$NAME.crt \
-    -policy extern_pol \
-    -extensions client_ext
+openssl rsa  -provider tpm2 -provider default -in certs/$NAME.key -pubout 
 ```
