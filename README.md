@@ -66,16 +66,19 @@ openssl ca -selfsign     -config single-root-ca.conf  \
 
 ```bash
 export NAME=server
+export SAN="DNS:server.domain.com"
+# export SAN="DNS:server.domain.com DNS:server2.domain.com IP: 127.0.0.1"
 
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
       -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
 
 openssl req -new     -config server.conf \
   -out certs/$NAME.csr  \
-  -key certs/$NAME.key \
+  -key certs/$NAME.key  -reqexts server_reqext   \
   -subj "/C=US/O=Google/OU=Enterprise/CN=server.domain.com" 
 
-## to specify a SAN, edit single-root-ca.conf and modify [ alt_names ]
+openssl req -in certs/$NAME.csr -noout -text
+
 
 openssl ca \
     -config single-root-ca.conf \
@@ -89,6 +92,7 @@ openssl ca \
 
 ```bash
 export NAME=user10
+export SAN="DNS:user10.domain.com"
 
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
       -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
