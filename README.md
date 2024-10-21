@@ -38,6 +38,8 @@ cp /dev/null ca/root-ca/db/root-ca.db.attr
 echo 01 > ca/root-ca/db/root-ca.crt.srl
 echo 01 > ca/root-ca/db/root-ca.crl.srl
 
+export SAN=single-root-ca
+
 # Pick signature algo (either do A,B or C)
 
 # A) Signature Algorithm: sha256WithRSAEncryption
@@ -50,7 +52,6 @@ echo 01 > ca/root-ca/db/root-ca.crl.srl
 
 # C) Signature Algorithm: ecdsa-with-SHA256
     openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
-      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
       -out ca/root-ca/private/root-ca.key
    
 openssl req -new  -config single-root-ca.conf  -key ca/root-ca/private/root-ca.key \
@@ -158,8 +159,7 @@ echo 01 > ca/root-ca/db/root-ca.crl.srl
       -pkeyopt rsa_keygen_pubexp:65537 -out ca/root-ca/private/root-ca.key
 
 # C) Signature Algorithm: ecdsa-with-SHA256
-    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
-      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256  \
       -out ca/root-ca/private/root-ca.key
    
 openssl req -new  -config root-ca.conf  -key ca/root-ca/private/root-ca.key \
@@ -209,8 +209,7 @@ echo 01 > ca/tls-ca/db/tls-ca.crl.srl
       -pkeyopt rsa_keygen_pubexp:65537 -out ca/tls-ca/private/tls-ca.key
 
 # C) Signature Algorithm: ecdsa-with-SHA256
-    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
-      -pkeyopt ec_param_enc:named_curve -pkeyopt ec_paramgen_curve:secp384r1 \
+    openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256  \
       -out ca/tls-ca/private/tls-ca.key
    
 
