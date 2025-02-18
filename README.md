@@ -40,7 +40,7 @@ echo 01 > ca/root-ca/db/root-ca.crl.srl
 
 export SAN=single-root-ca
 
-# Pick signature algo (either do A,B or C)
+# Pick signature algo (either do A,B,C or D)
 
 # A) Signature Algorithm: sha256WithRSAEncryption
     openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
@@ -54,6 +54,11 @@ export SAN=single-root-ca
     openssl genpkey -algorithm ec -pkeyopt  ec_paramgen_curve:P-256 \
       -out ca/root-ca/private/root-ca.key
    
+# D) Signature Algorithm: ML-DSA-44
+    openssl genpkey -algorithm ML-DSA-44 \
+      -out ca/root-ca/private/root-ca.key
+
+
 openssl req -new  -config single-root-ca.conf  -key ca/root-ca/private/root-ca.key \
    -out ca/root-ca.csr  
 
@@ -72,6 +77,8 @@ export SAN="DNS:server.domain.com"
 
 openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:2048 \
       -pkeyopt rsa_keygen_pubexp:65537 -out certs/$NAME.key
+
+openssl genpkey -algorithm ML-DSA-44 -out certs/$NAME.key
 
 openssl req -new     -config server.conf \
   -out certs/$NAME.csr  \
